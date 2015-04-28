@@ -1,0 +1,70 @@
+\documentclass[a4paper]{article}
+\usepackage[top=.75in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\title{\vspace{-30pt}STAT 745 -- Fall 2014\\Assignment 4}
+\author{Group 1: Francene Cicia, Doug Raffle, Melissa Smith}
+\date{September 22, 2014}
+
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\begin{document}
+\setlength{\parindent}{0pt}
+\vspace{-50pt}
+\maketitle
+
+\section{Group Lasso Derivation}
+
+Let $X$ be an orthogonal (i.e. $X'X = I$) and let $\hat{\beta}^{\left(ls\right)}$ be the least squares estimator, and in this case $\hat{\beta}^{\left(ls\right)} = X'y$. We will show that the lasso has a closed form of:
+\begin{equation*}
+    \hat{\beta}^{\left(lasso\right)} = sign\left(\hat{\beta}_{j}^{\left(ls\right)}\right) \left(|\hat{\beta}_{j}^{\left(ls\right)}| -\gamma\right)^{+}
+\end{equation*}
+Where $sign$ returns the sign of its input, $\left(t\right)^{+}= max\left(0,t\right)$ and $\gamma$ is determined so that the condition of $\Sigma|\hat{\beta}_{\left(j\right)}|=t$.
+
+\vspace{10pt}
+
+Recall: $||{y-X\beta}||_{2}^{2} + \lambda ||{\beta}||_{1}^{1}$ solves to $\hat{\beta}^{\left(lasso\right)}$.
+\vspace{10pt}
+
+Proof: 
+\begin{eqnarray}
+\argmin_{\beta} ||{y-X\beta}||_{2}^{2} + \lambda ||{\beta}||_{1}^{1} & = &\argmin_{\beta} \left(y-X\beta\right)^{T}\left(y-X\beta\right) + \lambda |\beta| \nonumber\\
+& = & y^{T}y - \beta^{T}X^{T}y - y^{T}X\beta + \beta^{T}X^{T}X\beta + \lambda |\beta| \nonumber\\
+& = & y^{T}y - 2y^{T}X\beta + \beta^{T}X^{T}X\beta + \lambda |\beta| \nonumber
+\end{eqnarray}\\
+\vspace{10pt}
+To find minimum, take the derivative with respect to $\beta$ and set equal to $0$.\\
+
+\begin{eqnarray}
+0 & = & \frac{\partial}{\partial\beta} y^{T}y - 2y^{T}X\beta_{j} + \beta-{j}^{T}X^{T}X\beta + \lambda |\beta_{j}| \nonumber \\
+0 & = & -2X^{T}y + 2(X^{T}X)\hat{\beta}_{j}^{\left(lasso\right)} + \lambda sign\left(\hat{\beta}_{j}^{\left(lasso\right)}\right)  \nonumber \\
+0 & = & -X^{T}y + \hat{\beta}_{j}^{\left(lasso\right)}I + \frac{\lambda}{2} sign\left(\hat{\beta}_{j}^{\left(lasso\right)}\right)  \nonumber \\ 
+0 & = & -\hat{\beta}_{j}^{\left(ls\right)} + \hat{\beta}_{j}^{\left(lasso\right)}I + \frac{\lambda}{2} sign\left(\hat{\beta}_{j}^{\left(lasso\right)}\right) \nonumber \\
+\hat{\beta}_{j}^{\left(lasso\right)} & = & \hat{\beta}_{j}^{\left(ls\right)} - \frac{\lambda}{2} sign\left(\hat{\beta}_{j}^{\left(lasso\right)}\right) \nonumber
+\end{eqnarray}
+\vspace{10pt}
+Notice that $\hat{\beta}_{j}^{\left(lasso\right)}$ and $\hat{\beta}_{j}^{\left(ls\right)}$ will have the same sign. Thus,
+\vspace{5pt}
+\begin{equation*}
+\hat{\beta}_{j}^{\left(lasso\right)} = \hat{\beta}_{j}^{\left(ls\right)} - \frac{\lambda}{2} sign\left(\hat{\beta}_{j}^{\left(ls\right)}\right) 
+\end{equation*}
+This means,
+\begin{displaymath}
+   f(x) = \left\{
+     \begin{array}{lr}
+      \hat{\beta}_{j}^{\left(ls\right)} - \frac{\lambda}{2} & : \hat{\beta}_{j}^{\left(ls\right)} \leq 0\\
+      \hat{\beta}_{j}^{\left(ls\right)} + \frac{\lambda}{2} & : \hat{\beta}_{j}^{\left(ls\right)}  > 0
+     \end{array}
+   \right.
+\end{displaymath}    
+It follows that,
+\begin{equation}
+\hat{\beta}_{j}^{\left(lasso\right)} = sign\left(\hat{\beta}_{j}^{\left(ls\right)}\right)\left(|\hat{\beta}_{j}^{\left(ls\right)}|- \gamma\right)^{+}.\blacksquare
+\end{equation}
+
+$\frac{\lambda}{2}$ is some threshold constatnt that determines if a given $\hat{\beta}_{j}^{\left(lasso\right)}$ will be zeroed out, we will call it $\gamma$ in $\left(1\right)$. If $|\hat{\beta}_{j}^{\left(ls\right)}|$ is less than $\gamma$, it means that inside the parentheses results in a negative number and the function $(t)$ will return a value of $0$, thus indicating that particular $|\hat{\beta}_{j}^{\left(ls\right)}|$ should not be included in the final model.  
+
+\end{document}
