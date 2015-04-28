@@ -1,0 +1,244 @@
+\documentclass[a4paper]{article}
+\usepackage[top=.75in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithm2e}
+\usepackage{Sweave}
+
+\title{\vspace{-30pt}STAT 745 -- Fall 2014\\Assignment 8}
+\author{Group 1: Francene Cicia, Doug Raffle, Melissa Smith}
+\date{November 3, 2014}
+
+\begin{document}
+\setlength{\parindent}{0pt}
+\vspace{-50pt}
+\maketitle
+
+\section{Margin Loss Function}
+
+We want to show that for any margin loss function $L(yf)$, the minimizer of:
+$$\min_f \sum_{i=1}^{n} L(y_i f(x_i))$$
+is solved by $y_i=f(x_i)$ for all $i$.\\
+
+We have $y,f \in \{-1,1\}$. Any margin loss function $L(yf)$ can be written as an equivalent
+convex function of the difference,
+$\psi(y-f)$. Then the above minimization problem is equivalent to: 
+
+$$\min_f \sum_{i=1}^{n} \psi(y_i - f(x_i))$$
+
+So we take the derivative and set it equal to zero:
+
+$$ \frac{\partial}{\partial f}: \sum_{i=1}^{n} \psi ^{'}(y_i -f(x_i))=0$$
+
+Given that this is a convex function, it is obvious that the minimum 
+occurs when $f(x_i) = y_i$.  This is inuitively reasonable.  We want
+to penalize $f(x)$ when it misclassifies the observations, and we
+should incur the smallest penalty when we correctly classify the
+observation, i.e., $L(yf) < L(yf')$ where $f$ is interpolation and
+$f'$ is any other prediction where $f \ne y$.
+
+
+\section{Graph Based Classification}
+
+\subsection{Positive Semi-Definite}
+Let $y_{i} \in \{-1,1\}$. Denote $W$ as the adjacency matrix of a
+graph. Define $\Delta = D - W$ where $D$ is the row sum matrix of
+$W$.\\ 
+(a) Show that $\Delta$ is positive semi-definite.\\
+
+Let $\nu \neq \overrightarrow{0}$. Then, \\
+$$
+W = 
+\begin{bmatrix}
+     W_{1,1} & W_{1,2} & \cdots & W_{1,n} \\
+     W_{2,1} & W_{2,2} & \cdots & W_{2,n} \\
+     \vdots  & \vdots  & \ddots & \vdots  \\
+     W_{n,1} & W_{n,2} & \cdots & W_{n,n}
+\end{bmatrix}\\
+\quad
+D=
+\begin{bmatrix}
+     \sum_{j=1}^{n} W_{1,j} & 0 & \cdots & 0 \\
+     0 & \sum_{j=1}^{n} W_{2,j} & \cdots & 0 \\
+     \vdots & \vdots  & \ddots & \vdots  \\
+     0 & 0 & \cdots & \sum_{j=1}^{n} W_{n,j}
+\end{bmatrix}\\
+\quad
+\nu=
+\begin{bmatrix}
+     \nu_{1} \\
+     \vdots \\
+     \nu_{n}
+\end{bmatrix}\\
+$$\\
+
+Using the fact that $\Delta = D-W$, \\
+\begin{eqnarray}
+  \nu^{T}\Delta \nu & = & \nu^{T} \left(D - W\right)\nu \nonumber \\
+  & = & \left(\nu^{T}D - \nu^{T}W\right)\nu \nonumber \\
+  & = & \nu^{T}D \nu - \nu^{T}W\nu    \nonumber 
+\end{eqnarray}\\
+
+Expanding each of these terms, we get:
+\begin{eqnarray}
+  \nu^{T}D \nu & = & \left[\nu_{1}^{2}\sum_{j=1}^{n} W_{1,j} +
+    \nu_{2}^{2}\sum_{j=1}^{n} W_{2,j} + \nu_{3}^{2}\sum_{j=1}^{n}
+    W_{3,j} + \cdots + \nu_{n}^{2}\sum_{j=1}^{n} W_{n,j}\right]
+  \nonumber \\ 
+  & = & \nu_{1}^{2}\left(W_{1,1} + W_{1,2} + \cdots + W_{1,n}\right) +
+  \nu_{2}^{2}\left(W_{2,1} + W_{2,2} + \cdots + W_{2,n}\right) + \cdots
+  \nonumber \\ 
+  && +\> \nu_{n-1}^{2}\left(W_{n-1,1} + W_{n-1,2} + \cdots +
+    W_{n-1,n}\right) + \nu_{n}^{2}\left(W_{n,1} + W_{n,2} + \cdots +
+    W_{n,n}\right) \nonumber 
+\end{eqnarray}
+
+\begin{eqnarray}
+  \nu^{T}W \nu & = & \nu_{1}\left(\nu_{1}W_{1,1} + \nu_{2}W_{2,1} +
+    \cdots + \nu_{n}W_{n,1}\right) + \nu_{2}\left(\nu_{1}W_{1,2} +
+    \nu_{2}W_{2,2} + \cdots + \nu_{n}W_{n,2}\right) + \cdots \nonumber
+  \\ 
+  && +\> \nu_{n}\left(\nu_{1}W_{1,n} + \nu_{2}W_{2,n} + \cdots +
+    \nu_{n}W_{n,n}\right) \nonumber  
+\end{eqnarray}
+
+\begin{eqnarray}
+  \nu^{T}D \nu-\nu^{T}W \nu & = & \nu_{1}^{2}\left(W_{1,1} +
+    W_{1,2} + \cdots + W_{1,n}\right) + \nu_{2}^{2}\left(W_{2,1} +
+    W_{2,2} + \cdots + W_{2,n}\right) + \cdots \nonumber \\ 
+  && +\> \nu_{n-1}^{2}\left(W_{n-1,1} + W_{n-1,2} + \cdots +
+    W_{n-1,n}\right) + \nu_{n}^{2}\left(W_{n,1} + W_{n,2} + \cdots +
+    W_{n,n}\right) \nonumber\\ 
+  && -\> \nu_{1}\left(\nu_{1}W_{1,1} - \nu_{2}W_{2,1} - \cdots -
+    \nu_{n}W_{n,1}\right) - \nu_{2}\left(\nu_{1}W_{1,2} - \nu_{2}W_{2,2}
+    - \cdots - \nu_{n}W_{n,2}\right) - \cdots \nonumber \\ 
+  && -\> \nu_{n}\left(\nu_{1}W_{1,n} - \nu_{2}W_{2,n} - \cdots -
+    \nu_{n}W_{n,n}\right) \nonumber 
+\end{eqnarray}
+
+Notice that the terms of the form $\nu_{i}^{2}W_{i,j}$ where $i=j$
+cancel out when you expand. Also, $W$ is a symmetric matrix, so
+$W_{i,j} = W_{j,i}$, thus when we simplify we get,\\ 
+\begin{eqnarray}
+  \nu^{T}D \nu-\nu^{T}W \nu & = & \left(\nu_{1}^{2} -
+    2\nu_{1}\nu_{2} + \nu_{2}^{2}\right)W_{1,2} + \left(\nu_{1}^{2} -
+    2\nu_{1}\nu_{3} + \nu_{3}^{2}\right)W_{1,3} + \cdots \nonumber \\ 
+  && +\> \left(\nu_{1}^{2} - 2\nu_{1}\nu_{n} + \nu_{n}^{2}\right)W_{1,n}
+  + \cdots + \left(\nu_{2}^{2} - 2\nu_{2}\nu_{3} +
+    \nu_{3}^{2}\right)W_{2,3} \nonumber\\ 
+  && +\> \left(\nu_{2}^{2} - 2\nu_{2}\nu_{4} + \nu_{4}^{2}\right)W_{2,4}
+  + \cdots + \left(\nu_{2}^{2} - 2\nu_{2}\nu_{n} +
+    \nu_{n}^{2}\right)W_{2,n} + \cdots \nonumber\\ 
+  && +\> \left(\nu_{n-1}^{2} - 2\nu_{n-1}\nu_{n} +
+    \nu_{n}^{2}\right)W_{n-1,n} \nonumber 
+\end{eqnarray}\\
+
+So because $W$ is symmetric we have,\\
+
+\begin{eqnarray}
+  2\left[\nu^{T}D \nu-\nu^{T}W \nu\right] & = &
+  2\left[\left(\nu_{1}^{2} - 2\nu_{1}\nu_{2} +
+      \nu_{2}^{2}\right)W_{1,2}\right] + \cdots +
+  2\left[\left(\nu_{n-1}^{2} - 2\nu_{n-1}\nu_{n} +
+      \nu_{n}^{2}\right)W_{n-1,n}\right] \nonumber \\ 
+  & = & \left(\nu_{1}^{2} - 2\nu_{1}\nu_{2} + \nu_{2}^{2}\right)W_{1,2}
+  + \left(\nu_{2}^{2} - 2\nu_{2}\nu_{1} + \nu_{1}^{2}\right)W_{2,1} +
+  \cdots + \left(\nu_{n-1}^{2} - 2\nu_{n-1}\nu_{n} +
+    \nu_{n}^{2}\right)W_{n-1,n} \nonumber \\ 
+  && +\> \left(\nu_{n}^{2} - 2\nu_{n}\nu_{n-1} + \nu_{n-1}^{2}\right)W_{n,n-1} \nonumber \\
+  2\left[\nu^{T}D \nu-\nu^{T}W \nu\right] & = & \sum_{i=1}^{n}
+  \sum_{j=1}^{n} \left(\nu_{i} - \nu_{j}\right)^{2}W_{i,j} \nonumber \\ 
+  \nu^{T}\Delta \nu & = & \frac{\sum_{i=1}^{n} \sum_{j=1}^{n}
+    \left(\nu_{i} - \nu_{j}\right)^{2}W_{i,j}}{2} \nonumber\\ 
+\end{eqnarray}\\
+Notice that $\nu^{T}\Delta \nu \geq 0$ because of the squared
+term. Thus, $\Delta$ is positive semi-definite. 
+
+
+\subsection{Newton's Method}
+Derive the algorithm that solves:
+$$\min_f \sum_{i=1}^{n} \log(1+e^{-2y_if_i}) + f^T \Delta f$$
+
+Let
+\begin{align*}
+  g(f) = \sum_{i=1}^{n} \log(1+e^{-2y_if_i}) + f^T \Delta f
+\end{align*}
+
+We first take the gradients with respect to $f$:
+\begin{align*}
+  \nabla_f g(f) = \sum_{i=1}^n \frac{-2y_i e^{-2y_i f_i}}{1+e^{-2y_i f_i}} + 2\Delta f
+\end{align*}
+
+If we define the function $h$ such that $h(x) = \frac{e^x}{1+e^x}$ and
+the matrix $Y$ such that $Y_{ij} = y_i I\{i=j\}$, we can write this as:
+
+\begin{align*}
+  \nabla_f g(f) = -2Yh(-2yf) + 2\Delta f
+\end{align*}
+
+Similarly,
+\begin{align*}
+  \nabla^2_f g(f) = \nabla_f [-2Yh(-2yf) + 2\Delta f]
+\end{align*}
+Where:
+\begin{align*}
+  \nabla_f h(-2y_i f_i) &= \frac{e^{-2y_i f_i}}{1+e^{-2y_i f_i}}(-2y_i) - 
+    \frac{(e^{-2y_i f_i})^2}{(1+e^{-2y_i f_i})^2} (-2y_i)\\
+  &= h(-2y_i f_i)(1-h(-2y_i f_i))(-2y_i)
+\end{align*}
+  
+So,
+\begin{align*}
+  \nabla^2_f g(f)= \sum_{i=1}^n -2y_ih(-2y_i f_i)(1-h(-2y_i f_i))(-2y_i) + 2\Delta
+\end{align*}
+We can define the matrix $Z$ such that $Z_{ij} = h(-2y_i f_i)(1-h(-2y_i f_i))I\{i=j\}$,
+then:
+\begin{align*}
+  \nabla^2_f g(f) = 4Y^TZY + 2\Delta
+\end{align*}
+
+Which gives us a Newton update step of:
+\begin{align*}
+  f^{(i+1)} = f^{(i)} - \left(\nabla_f^2 g\left(f^{(i)}\right)\right)^{-1}
+   \nabla_f g\left(f^{(i)}\right)
+\end{align*}
+
+Algorithm:\\
+\begin{algorithm}[H]
+  \DontPrintSemicolon
+  \SetKw{Init}{Initialize}
+  \Init $f^{(i)} = \overrightarrow{0}$ \;
+  \Repeat{
+    $\lvert f^{(i+1)}_j - f^{(i)}_j \rvert < \epsilon \quad \forall \quad j
+    \in 1\ldots n$
+  }{
+    $f^{(i+1)} = f^{(i)} - \left(\nabla_f^2 g\left(f^{(i)}\right)\right)^{-1}
+   \nabla_f g\left(f^{(i)}\right)$\;
+  }
+\end{algorithm}
+
+\subsection{Cora Text Data}
+<<>>=
+W <- as.matrix(read.table("cite.txt", header=TRUE))
+n <- nrow(W)
+D <- diag(as.vector(W %*% rep(1, n)))
+Del <- D - W
+y <- -1*(2*(as.numeric(read.table("class.txt", header=TRUE)[,1])-1)-1)
+Y <- diag(y)
+h <- function(x) exp(x)/(1 + exp(x))
+g <- function(f) log(1+exp(-2*y*f))
+g.grad1 <- function(f) -2*Y %*% h(-2*y*f) + 2*Del%*%f
+g.grad2 <- function(f) 4*t(Y) %*% diag(h(-2*y*f)*(1 - h(-2*y*f))) %*% Y + 2*Del
+f <- rep(0, n)
+eps <- 0.05
+for(i in 1:100){
+    f.i <- as.vector(f - solve(g.grad2(f)) %*% g.grad1(f))
+    if(isTRUE(all.equal(f.i, f, tolerance=eps))) break
+    f <- f.i
+}
+y.hat <- sign(f)
+cat("Accuracy Rate: ", 100*round(table(y.hat*y)[2]/n,4), "%\n", sep="")
+@ 
+
+
+\end{document}
