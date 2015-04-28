@@ -1,0 +1,262 @@
+\documentclass[a4paper]{article}
+\usepackage[top=.75in, bottom=.75in, left=.5in, right=.5in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+
+\title{\vspace{-30pt}STAT 745 -- Fall 2014\\Assignment 12}
+\author{Group 1: Francene Cicia, Doug Raffle, Melissa Smith}
+\date{December 8, 2014}
+
+\begin{document}
+\setlength{\parindent}{0pt}
+\vspace{-50pt}
+\maketitle
+\renewcommand{\thesection}{\alph{section}.}
+
+\section{Graph Based Learning}
+In graph based learning, we define and adjacency graph and response as:\\
+$$
+A = 
+\begin{bmatrix}
+     A_{LL} & A_{LU} \\
+     A_{UL} & A_{UU} 
+\end{bmatrix},
+\quad
+Y=
+\begin{bmatrix}
+     Y_{L} \\
+     Y_{U}
+\end{bmatrix}\\
+$$\\
+
+where $Y_{U}$ is missing. Let $S=D^{-1}A$, where $D$ is the diagonal
+row sum matrix. So we have that the Laplcian matrix and $D$ can be
+expressed as:\\ 
+
+$$
+D = 
+\begin{bmatrix}
+     D_{LL} + D_{LU} & 0 \\
+     0 & D_{UU} + D_{UL}
+\end{bmatrix},
+\quad
+\Delta=
+\begin{bmatrix}
+     \Delta_{LL} & \Delta_{LU} \\
+     \Delta_{UL} & \Delta_{UU} 
+\end{bmatrix}\\
+=
+\begin{bmatrix}
+     D_{LL} + D_{LU} - A_{LL} & -A_{LU} \\
+     -A_{UL} & D_{UU} + D_{UL} - A_{UU}
+\end{bmatrix}\\
+$$\\
+
+From this, we employ propagation to fit $\hat{f}$. We have shown previously that
+$\hat{f}_{L}= S_{LL}Y_{L} + S_{LU}(I - S_{UU})^{-1}S_{UL}Y_{L} =
+M_{LL}Y_{L}$ and $\hat{f}_{U} = (I - S_{UU})^{-1}S_{UL}Y_{L}$. Let
+$T_{LL}$ be the labeled only smoother. Also, define matrix $Q$ and
+$S_{LUL}$ so that $M_{LL} = QT_{LL} + (I - Q)S_{LUL}$.  
+
+\section{Exact form of $T_{LL}$}
+Notice, we know that $S = D^{-1}A$. Using the matrices defined above,
+we can solve for the partitions of $S$.  
+
+$$
+S= D^{-1}A = 
+\begin{bmatrix}
+     (D_{LL} + D_{LU})^{-1} & 0 \\
+     0 & (D_{UU} + D_{UL})^{-1}
+\end{bmatrix}\\
+\quad
+\begin{bmatrix}
+     A_{LL} & A_{LU} \\
+     A_{UL} & A_{UU} 
+\end{bmatrix}\\
+=
+\begin{bmatrix}
+     (D_{LL} + D_{LU})^{-1}A_{LL} & (D_{LL} + D_{LU})^{-1}A_{LU} \\
+     (D_{UU} + D_{UL})^{-1}A_{UL} & (D_{UU} + D_{UL})^{-1}A_{UU} 
+\end{bmatrix}\\
+$$\\
+
+We know that the supervised only smoother is $S_{LL}$, from the above matrix $S_{LL} = (D_{LL} + D_{LU})^{-1}A_{LL} = D_{LL}^{-1}A_{LL}$.\\
+Thus, $T_{LL} = D_{LL}^{-1}A_{LL}$.\\
+
+\section{Finding $\widetilde{f}_{U}$}
+We have that $f_L = S_{LL}Y_L$.  To estimate the responses for the
+unlabeled nodes, we need to use the information we have that connects
+the labeled with the unlabeled cases.  We connect these cases with
+$A_{UL}$ (and hence the smoother $S_{UL}$), so it follows that
+$\widetilde{f}_U$ has the form: 
+
+\begin{align*}
+  \widetilde{f}_U = S_{UL}Y_L
+\end{align*}
+
+
+\section{Solving for $Q$ and $S_{LUL}$}
+
+From $\hat{f}_{L}$, we can start with the fact that $M_{LL} = S_{LL} +
+S_{LU}(I - S_{UU})^{-1}S_{UL}$. So, we can start by putting $M_{LL}$
+in terms of partitions of $D$ and $A$:\\ 
+
+\begin{align*}
+M_{LL} =& S_{LL} + S_{LU}\left(I - S_{UU}\right)^{-1}S_{UL} \\
+=&
+  \left(D_{LL} + D_{LU}\right)^{-1}A_{LL}
+  + \left(D_{LL} +
+    D_{LU}\right)^{-1}A_{LU}\left(I - \left(D_{UU} +
+      D_{UL}\right)^{-1}A_{UU}\right)^{-1}\left(D_{UU} +
+    D_{UL}\right)^{-1}A_{UL}\\ 
+=&
+  \left(D_{LL}\left(I - D_{LL}^{-1}D_{LU}\right)\right)^{-1}A_{LL}
+  +
+  \left(D_{LL} + D_{LU}\right)^{-1}A_{LU}\left(I - \left(D_{UU} +
+      D_{UL}\right)^{-1}A_{UU}\right)^{-1}\left(D_{UU} +
+    D_{UL}\right)^{-1}A_{UL}\\ 
+=&
+  \left(I + D_{LL}^{-1}D_{LU}\right)^{-1}D_{LL}^{-1}A_{LL}
+  +
+  \left(D_{LL} + D_{LU}\right)^{-1}A_{LU}\left(\left(D_{UU} +
+      D_{UL}\right)^{-1}\left(\left(D_{UU} + D_{UL}\right) -
+      A_{UU}\right)\right)^{-1}\left(D_{UU} + D_{UL}\right)^{-1}A_{UL}\\ 
+=&
+  (I + D_{LL}^{-1}D_{LU})^{-1}D_{LL}^{-1}A_{LL}
+  + \left(D_{LL} +
+    D_{LU}\right)^{-1}A_{LU}\left(\left(D_{UU} +
+      D_{UL}\right)^{-1}\Delta_{UU}\right)^{-1} \left(D_{UU} +
+    D_{UL}\right)^{-1}A_{UL}\\ 
+=&
+  \left(I + D_{LL}^{-1}D_{LU}\right)^{-1}D_{LL}^{-1}A_{LL} +
+  \left(D_{LL} + D_{LU}\right)^{-1}A_{LU}\Delta_{UU}^{-1}\left(D_{UU} +
+    D_{UL}\right)\left(D_{UU} + D_{UL}\right)^{-1}A_{UL}\\ 
+=&
+  \left(I + D_{LL}^{-1}D_{LU}\right)^{-1}D_{LL}^{-1}A_{LL} +
+  \left(D_{LL} + D_{LU}\right)^{-1}A_{LU}\Delta_{UU}^{-1}A_{UL}
+\end{align*}\\
+
+We know that:
+\begin{equation*}
+M_{LL} = S_{LL} + S_{LU}\left(I - S_{UU}\right)^{-1}S_{UL} = QT_{LL} + \left(I - Q\right)S_{LUL}
+\end{equation*}\\
+From the above derivation we found,
+\begin{equation*}
+M_{LL} = \left(I + D_{LL}^{-1}D_{LU}\right)^{-1}D_{LL}^{-1}A_{LL} +
+\left(D_{LL} + D_{LU}\right)^{-1}A_{LU}\Delta_{UU}^{-1}A_{UL} 
+\end{equation*}
+It follows that,
+\begin{equation*}
+\left(I + D_{LL}^{-1}D_{LU}\right)^{-1}D_{LL}^{-1}A_{LL} +
+\left(D_{LL} + D_{LU}\right)^{-1}A_{LU}\Delta_{UU}^{-1}A_{UL} =
+QT_{LL} + \left(I - Q\right)S_{LUL} 
+\end{equation*}\\
+From this, we can see 
+\begin{equation*}
+\left(I + D_{LL}^{-1}D_{LU}\right)^{-1}D_{LL}^{-1}A_{LL} = QT_{LL}
+\end{equation*}
+From above, we know that$T_{LL} = D_{LL}^{-1}A_{LL}$ so it follows that:
+\begin{align*}
+Q = \left(I +D_{LL}^{-1}D_{LU}\right)^{-1}
+\end{align*}
+
+From the above equations for $M_{LL}$ we also have,
+\begin{eqnarray}
+\left(I - Q\right)S_{LUL} & = & \left(D_{LL} + D_{LU}\right)^{-1}A_{LU}\Delta_{UU}^{-1}A_{UL} \nonumber \\
+& = & \left(D_{LU}\left(D_{LU}^{-1}D_{LL} + I\right)\right)^{-1}A_{LU}\Delta_{UU}^{-1}A_{UL} \nonumber \\
+& = & \left(D_{LU}^{-1}D_{LL} + I \right)^{-1}D_{LU}^{-1}A_{LU}\Delta_{UU}^{-1}A_{UL} \nonumber 
+\end{eqnarray}
+
+In order for this to hold, we need that
+$\left(I - Q\right) = \left(D_{LU}^{-1}D_{LL} + I \right)^{-1}$. 
+Notice, $\left(I-Q\right)+Q = I$, we can see if this holds for the
+$\left(I-Q\right)$ and $Q$ that we found.
+\begin{eqnarray}
+\left(I-Q\right) + Q &=& \left(D_{LU}^{-1}D_{LL} + I \right)^{-1} +
+\left(I + D_{LL}^{-1}D_{LU}\right)^{-1} \nonumber \\ 
+&=& \left(D_{LU}^{-1}\left(D_{LL} + D_{LU}\right)\right)^{-1} +
+\left(D_{LL}^{-1}\left(D_{LL} + D_{LU}\right)\right)^{-1} \nonumber \\ 
+&=& \left(D_{LL} + D_{LU}\right)^{-1} \left(D_{LU} + D_{LL}\right) \nonumber \\
+&=& I
+\end{eqnarray}
+Therefore, we know that:
+\begin{equation*}
+S_{LUL} = D_{LU}^{-1}A_{LU}\Delta_{UU}^{-1}A_{UL} 
+\end{equation*}\\
+Also, by the partitioning of the graphs above,\\
+\begin{eqnarray}
+D_{LU}^{-1}A_{LU}\Delta_{UU}^{-1}A_{UL} &=& D_{LU}^{-1}\left(-\Delta_{LU}\right)\Delta_{UU}^{-1}\left(-\Delta_{UL}\right) \nonumber \\ 
+&=& D_{LU}^{-1}\Delta_{LU}\Delta_{UU}^{-1}\Delta_{UL} \nonumber 
+\end{eqnarray}\\
+
+\section{Showing $S_{LUL}$ is right stochastic}
+
+We will begin by showing some important identities. 
+By properties of Laplacian matrices, we know $\Delta
+\vec{1} = \vec{0}$ so,
+\begin{equation*}
+\begin{bmatrix}
+     \Delta_{LL} & \Delta_{LU} \\
+     \Delta_{UL} & \Delta_{UU} 
+\end{bmatrix}
+\vec{1}
+\quad
+=
+\begin{bmatrix}
+     D_{LL} + D_{LU} - A_{LL} & -A_{LU} \\
+     -A_{UL} & D_{UU} + D_{UL} - A_{UU}
+\end{bmatrix}\\
+\vec{1}
+\quad 
+= 
+\vec{0}
+\end{equation*}
+
+From above, we can see,
+\begin{eqnarray}
+\Delta_{UU}\vec{1} + \Delta_{UL}\vec{1} = \vec{0} \nonumber \\
+\Delta_{UU}\vec{1} = -\Delta_{UL}\vec{1} \nonumber 
+\end{eqnarray} \\
+Similarly, we have,
+\begin{eqnarray}
+\Delta_{LL}\vec{1} + \Delta_{LU}\vec{1} &=& 0 \nonumber \\
+\left(D_{LL} + D_{LU} - A_{LL}\right)\vec{1} + \Delta_{LU}\vec{1} &=& 0 \nonumber \\
+D_{LL}\vec{1} - A_{LL}\vec{1} + D_{LU}\vec{1} + \Delta_{LU}\vec{1} &=& 0 \nonumber \\
+\Delta_{LU}\vec{1} &=& -D_{LU}\vec{1} \nonumber 
+\end{eqnarray}\\
+Notice the above holds because $D_{LL}\vec{1} = A_{LL}\vec{1}$.\\
+
+In order to show $S_{LUL}$ is right stochastic, we first need to
+show $S_{LUL}\vec{1} = \vec{1}$.
+
+\begin{eqnarray}
+S_{LUL}\vec{1} & = & \left(D_{LU}^{-1}\Delta_{LU}\Delta_{UU}^{-1}\Delta_{UL}\right)\vec{1} \nonumber \\
+& = & D_{LU}^{-1}\vec{1}\Delta_{LU}\vec{1}\Delta_{UU}^{-1}\vec{1}\Delta_{UL}\vec{1} \nonumber \\
+& = &
+D_{LU}^{-1}\vec{1}\left(-D_{LU}\right)\vec{1}\Delta_{UU}^{-1}\vec{1}\left(-\Delta_{UU}\right)\vec{1}
+\nonumber \\ 
+& = & \left(-I\right)\vec{1}\left(-I\right)\vec{1} \nonumber \\
+& = & \vec{1} 
+\end{eqnarray}\\
+In order for $S_{LUL}$ to be right stochastic, $S_{LUL_{ij}} \geq
+0$ for all $i$, $j$. We know that $A$ is an adjacency matrix, so all
+of its elements, $A_{ij} \geq 0$. $D$ is the diagonal row sum matrix
+of $A$, so $D_{ij} \geq A_{ij}$ for all $i$, $j$. This implies that
+$\Delta_{ij} \geq 0$ for all $i$, $j$. $S_{LUL}$ is a product of
+matrices containing all non-negative elements, thus $S_{LUL_{ij}} \geq
+0$ for all $i$, $j$. Thus, $S_{LUL}$ is right stochastic.  
+
+
+\section{Supervised vs. Semi-Supervised}
+If we have no edges connecting the labeled to unlabed cases, $A_{UL}$
+and hence $S_{UL}$ would provide no information about $Y_U$ and
+$\widetilde{f}_U$ would not exist.  In this
+case supervised and semi-supervised techniques should be equivalent,
+since both cases would make the same predictions for the labeled cases and
+no predictions for the unlabeled.\\
+
+In the case that the data is linearly seperable, the boundary found by
+both methods would similar and the results would be close.
+
+\end{document}
