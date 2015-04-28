@@ -1,11 +1,11 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.4.18)  21 SEP 2014 21:39
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.1.14)  28 APR 2015 00:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **h4_ind
 (./h4_ind.tex
 LaTeX2e <2011/06/27>
-Babel <3.9h> and hyphenation patterns for 2 languages loaded.
+Babel <3.9h> and hyphenation patterns for 78 languages loaded.
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
 (/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
@@ -542,12 +542,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 122--128
 [3 <./h4_ind-011.pdf> <./h4_ind-012.pdf> <./h4_ind-013.pdf> <./h4_ind-014.pdf>]
 (./h4_ind.aux) ) 
 Here is how much of TeX's memory you used:
- 4116 strings out of 495028
- 55987 string characters out of 6181497
- 111123 words of memory out of 5000000
- 7215 multiletter control sequences out of 15000+600000
+ 4116 strings out of 493304
+ 55987 string characters out of 6139871
+ 115409 words of memory out of 5000000
+ 7464 multiletter control sequences out of 15000+600000
  27751 words of font info for 72 fonts, out of 8000000 for 9000
- 14 hyphenation exceptions out of 8191
+ 957 hyphenation exceptions out of 8191
  37i,6n,26p,228b,200s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.
@@ -558,7 +558,7 @@ ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist
 /fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/public/amsfonts/cm/cmsy10.pfb>
-Output written on h4_ind.pdf (3 pages, 384162 bytes).
+Output written on h4_ind.pdf (3 pages, 384165 bytes).
 PDF statistics:
  134 PDF objects out of 1000 (max. 8388607)
  95 compressed objects within 1 object stream
