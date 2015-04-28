@@ -1,0 +1,175 @@
+\documentclass[a4paper]{article}
+\usepackage[top=.75in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\title{\vspace{-30pt}STAT 745 -- Fall 2014\\Assignment 3}
+\author{Group 1: Francene Cicia, Doug Raffle, Melissa Smith}
+\date{September 15, 2014}
+
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\begin{document}
+\setlength{\parindent}{0pt}
+\vspace{-50pt}
+\maketitle
+
+\section{Loess}
+\subsection{Find $\theta_0$ in loess $d=0$.}
+\begin{align*}
+  \min_{\theta_0} \sum\limits_{i=1}^n K_\lambda(x_0, x_i)(y_i-\theta_0)^2\\
+\end{align*}
+We start by differentiating with respect to $\theta_0$:\\
+\begin{align*}
+  \frac{\partial}{\partial \theta_0} \sum\limits_{i=1}^n K_\lambda(x_0, x_i)(y_i-\theta_0)^2
+  = \sum\limits_{i=1}^n 2 K_\lambda(x_0, x_i)(y_i-\theta_0)
+  = 2\sum\limits_{i=1}^n K_\lambda(x_0, x_i)y_i - 
+     2\theta_0\sum\limits_{i=1}^n K_\lambda(x_0, x_i)\\
+\end{align*}
+Then set the derivative equal to zero and solve for $\theta_0$:\\
+\begin{align*}     
+  2\sum\limits_{i=1}^n K_\lambda(x_0, x_i)y_i - 
+     2\theta_0\sum\limits_{i=1}^n K_\lambda(x_0, x_i) &= 0
+\end{align*}
+\begin{align*}
+  \hat{y}=\hat{\theta_0} = \frac{\sum\limits_{i=1}^n K_\lambda(x_0, x_i)y_i}
+                   {\sum\limits_{i=1}^n K_\lambda(x_0, x_i)}\\
+\end{align*}
+
+\subsection{Find $\theta_0$ and $\theta_1$ in loess $d=1$}
+\begin{align*}
+  \min_{\theta_0, \theta_1} \sum\limits_{i=1}^n K_\lambda(x_0, x_i)(y_i-\theta_0 - \theta_1x_i)^2
+\end{align*}
+
+We can start by finding taking partial derivatives with respect to
+$\theta_0$ and $\theta_1$, setting them to zero, and solving for their
+corresponding $\theta_i$.
+
+\begin{align*}
+  \frac{\partial}{\partial\theta_0} \sum\limits_{i=1}^n 
+      K_\lambda(x_0,x_i)(y_i-\theta_0 - \theta_1x_i)^2 &=
+  -2\sum\limits_{i=1}^n K_\lambda(x_0,x_i)(y_i-\theta_0 - \theta_1x_i)
+\end{align*}
+\begin{align*}
+  0 &= -2\sum\limits_{i=1}^n K_\lambda(x_0,x_i)(y_i - \theta_1x_i) + 
+       2\theta_0\sum\limits_{i=1}^n K_\lambda(x_0,x_i)
+\end{align*}
+\begin{align}
+  \hat{\theta_0} &= \frac{\sum\limits_{i=1}^n K_\lambda(x_0,x_i)y_i - 
+                    \theta_1\sum\limits_{i=1}^n K_\lambda(x_0,x_i)x_i}
+                   {\sum\limits_{i=1}^n K_\lambda(x_0,x_i)}
+\end{align}\\
+  
+\begin{align*}
+  \frac{\partial}{\partial\theta_1} \sum\limits_{i=1}^n 
+      K_\lambda(x_0,x_i)(y_i-\theta_0) - \theta_1x_i)^2 &=
+  -2\sum\limits_{i=1}^n x_i K_\lambda(x_0,x_i)(y_i-\theta_0 - \theta_1x_i)
+\end{align*}
+\begin{align*}
+  0 = -2\sum\limits_{i=1}^n x_i K_\lambda(x_0,x_i)(y_i-\theta_0) + 
+      2\theta_1 \sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i^2
+\end{align*}
+\begin{align}
+  \hat{\theta_1} = \frac{\sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i y_i -
+                   \theta_0\sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i}
+                  {\sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i^2}
+\end{align}
+
+Since $\hat{\theta_0}$ is written in terms of $\theta_1$ and vice versa, we
+can use $\hat{\theta_1}$ from Equation 2 to solve for $\hat{\theta_0}$
+explicitly.  
+
+\begin{align*}
+  \hat{\theta_0} &= \frac{\sum\limits_{i=1}^n K_\lambda(x_0,x_i)y_i - 
+                    \left(
+                      \frac{\sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i y_i -
+                        \theta_0\sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i}
+                      {\sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i^2}
+                    \right)
+                      \sum\limits_{i=1}^n K_\lambda(x_0,x_i)x_i}
+                   {\sum\limits_{i=1}^n K_\lambda(x_0,x_i)}
+\end{align*}
+Which simplifies to:
+\begin{align}
+  \hat{\theta_0} = \frac{\sum\limits_{i=1}^n K_\lambda(x_0,x_i)x_i^2
+                   \sum\limits_{i=1}^n K_\lambda(x_0,x_i) y_i - 
+                   \sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i
+                   \sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i y_i}
+                  {\sum\limits_{i=1}^n K_\lambda(x_0,x_i)
+                   \sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i^2 - 
+                   \left(\sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i\right)^2}
+\end{align}
+
+This estimator can now be used in Equation 2 for $\theta_0$:
+
+\begin{align}
+  \hat{\theta_1} = \frac{\sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i y_i -
+                   \hat{\theta_0}\sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i}
+                  {\sum\limits_{i=1}^n K_\lambda(x_0,x_i) x_i^2}
+\end{align}
+Equations 3 and 4 can be used to find the coefficients in our final estimator:
+\begin{align*}
+  \hat{y} = \hat{\theta_0} + \hat{\theta_1}x
+\end{align*}
+
+\section{Least Squares and Ridge Regression}
+\subsection{Least Squares}
+\begin{align*}
+  H &= X(X^TX)^{-1}X^T
+\end{align*}
+Estimator:
+\begin{align*}
+  \hat{f} &= X\hat{\beta}^{(ls)}\\
+          &= X(X^TX)^{-1}X^Ty\\
+          &= Hy
+\end{align*}
+Trace:
+\begin{align*}
+  tr(H) = \sum\limits_{i=1}^{n} H_{ii}  = rank(X) = p
+\end{align*}
+The trace of $H$ is equal to the number of parameters in Least Squares Regression.
+\subsection{Ridge}
+
+\begin{align*}
+  H_\lambda &= X(X^TX + \lambda I)^{-1}X^T
+\end{align*}
+Estimator:
+\begin{align*}
+  \hat{f} &= X\hat{\beta}^{(ridge)}_\lambda\\ 
+          &= X(X^TX + \lambda I)^{-1}X^Ty\\
+          &= H_\lambda y\\
+\end{align*}
+Trace:
+\begin{align*}
+  tr(H_\lambda) = df(\lambda) = \sum\limits_{i=1}^p \frac{d_i^2}
+                                                         {d_i^2 + \lambda}\\
+\end{align*}
+Where $p$ is the number of parameters ($rank(X)$), the $d_i$'s are the
+singular values of $X$ (similarly, the $d_i^2$'s are the eigenvalues of $X^TX$), and
+$df(\lambda)$ are the effective degrees of freedom.\\
+
+This result makes intuitive sense in the context of Ridge Regression.
+Extending principal component analysis,
+variables with small eigenvalues have less variation and should
+therefore be less informative about $y$. Ridge Regression implements
+this idea by giving variables with small eigenvalues lower weights,
+according to the ratio $(d_i^2)/(d_i^2+\lambda)$.\\ 
+
+When $\lambda=0$:
+\begin{align*}
+  H_\lambda = X(X^TX + 0I)^{-1}X^T &= X(X^TX)^{-1}X^T = H\\
+  tr(H_\lambda) = \sum\limits_{i=1}^p \frac{d_i^2}{d_i^2}&=\sum\limits_{i=1}^p 1 = p = tr(H)
+\end{align*}
+
+
+So for $\lambda=0$, Ridge Regression is equivalent to Least Squares
+Regression.  As $\lambda$ increases, however, the
+variables are ``shrunk'' more and more, and the less informative
+variables are essentially zeroed out.  Doing this removes variables
+from consideration, which effectively shrinks the parameter space.
+Since the degrees of freedom for the model depend on the number of
+parameters, we should adjust them accordingly, hence the
+\emph{effective} degrees of freedom.
+\end{document}

@@ -1,0 +1,61 @@
+###################################################################
+######################  Assignment 3: Loess  ######################
+###################################################################
+#####  Doug Raffle
+#####  Fall 2014
+#####  STAT 745 - Data Mining 
+
+#### Create functions for performing loess with and for d=0 and d=1
+loess0<-function(x0,x,y,kern,lam){
+  x=as.matrix(x)
+  p=dim(x)[2]
+  n=dim(x)[1]
+  dis=rep(0,n)
+  for(i in 1:p) dis <- (x0[i]-x[,i])^2 + dis
+  sum(kern(dis, lam)*y)/sum(kern(dis, lam))
+}
+
+loess1<-function(x0,x,y,kern,lam){
+  x=as.matrix(x)
+  p=dim(x)[2]
+  n=dim(x)[1]
+  dis=rep(0,n)
+  for(i in 1:p) dis= (x0[i]-x[,i])^2+dis
+  k.lam <- kern(dis, lam)
+  theta.0 <- ((sum(x^2 * k.lam)*sum(k.lam*y) - sum(x*k.lam)*sum(x*y*k.lam))/
+             (sum(k.lam)*sum(x^2*k.lam) - (sum(x*k.lam))^2))
+  theta.1 <- (sum(x*y*k.lam) - theta.0*sum(x*k.lam))/sum(x^2*k.lam)
+  theta.0 + theta.1*x0
+}
+
+kern<-function(x,lam) exp(-x/lam)/lam
+
+######
+## sin(x) Regression Example
+######
+set.seed(100)
+x=runif(100,0,2*pi)
+y=sin(x)+rnorm(100,,0.1)
+
+xgrid=seq(0,2*pi,length=500)
+n=length(xgrid)
+ygrid=vector(length=n)
+k=15
+
+run.loess <- function(d, lam){
+    ifelse(d,
+           ygrid <<- sapply(1:n, function(i) loess1(xgrid[i], x, y, kern, lam)),
+           ygrid <<- sapply(1:n, function(i) loess0(xgrid[i], x, y, kern, lam)))
+
+    plot(x,y,pch=16, main=bquote(paste("Loess (", lambda,"=", .(lam), ", d=", .(d), ")")))
+    lines(xgrid,ygrid,col=c("red"), lwd=2)
+    lines(xgrid,sin(xgrid),col=c("blue"), lwd=2)
+}
+
+png("loess.png", width=2400, height=960)
+par(mfrow=c(2,5), cex.main=2, cex.axis=1.5, cex.lab=2)
+lam.vec <- c(0.01, .1, .5, 1, 100)
+for(lam in lam.vec) run.loess(0, lam)
+for(lam in lam.vec) run.loess(1, lam)
+dev.off()
+
